@@ -7,7 +7,6 @@ export const orderCreateAction = async ({ request }: ActionFunctionArgs) => {
   const selectedCustomer = formData.get("selectedCustomer") as string;
   const paymentType = formData.get("paymentType") as string;
 
-  console.log(orderItems);
 
   const totalAmount = orderItems.reduce(
     (acc: number, curr: any) => acc + curr.quantity * curr.price,

@@ -1,7 +1,12 @@
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useNavigate,
+  useNavigation,
+} from "@remix-run/react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,43 +17,22 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { apiFetch } from "@/utils/api.server";
-import { createUserSession } from "@/utils/auth.server";
-
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  const response = await apiFetch(request, "/admin/auth/login", {
-    method: "POST",
-    data: { email, password },
-  });
-
-  if (response instanceof Response) return response;
-  
-
-  if (response.error) {
-    return { error: response.error };
-  }
-  const { token, userId, name, role, avatarUrl } = response.data;
-
-  return await createUserSession(
-    {
-      id: userId,
-      name,
-      email,
-      role,
-      avatarUrl,
-      token,
-    },
-    "/admin"
-  );
-};
+import { loginAction as action } from "@/server/user.action";
+import toast from "react-hot-toast";
+export { action };
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const actionData = useActionData<typeof action>();
+  const navigation = useNavigation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (actionData?.success && navigation.state === "idle") {
+      toast.success("Login successful");
+      navigate("/admin");
+    }
+  }, [actionData, navigation.state]);
 
   return (
     <section className="">
@@ -69,8 +53,8 @@ export default function LoginPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" name="email" />
+                  <Label htmlFor="username">Username</Label>
+                  <Input id="username" name="username" />
                 </div>
                 <div className="relative">
                   <Label htmlFor="password">Password</Label>

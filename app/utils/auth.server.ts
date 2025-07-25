@@ -3,19 +3,13 @@ import { env } from "./env.server";
 
 export type Session = {
   id: string;
-  name: string;
-  email: string;
-  role: string;
-  avatarUrl: string;
+  username: string;
   token: string;
 };
 
 type UserSession = {
   id: string;
-  name: string;
-  email: string;
-  role: string;
-  avatarUrl: string;
+  username: string;
   token: string;
 };
 
@@ -37,10 +31,7 @@ const storage = createCookieSessionStorage({
 async function createUserSession(user: UserSession, redirectTo: string) {
   const session = await storage.getSession();
   session.set("userId", user.id);
-  session.set("userName", user.name);
-  session.set("userEmail", user.email);
-  session.set("userRole", user.role);
-  session.set("userAvatarUrl", user.avatarUrl);
+  session.set("username", user.username);
   session.set("token", user.token);
 
   return redirect(redirectTo, {
@@ -66,22 +57,16 @@ async function requireUserSession(
   const session = await getSession(request);
 
   const userId = session.get("userId");
-  const userName = session.get("userName");
-  const userEmail = session.get("userEmail");
-  const userRole = session.get("userRole");
-  const userAvatarUrl = session.get("userAvatarUrl");
+  const username = session.get("username");
   const token = session.get("token");
 
-  if (!userId || !token) {
+  if (!userId || !token || !username) {
     throw redirect(redirectTo);
   }
 
   return {
     id: userId,
-    name: userName,
-    email: userEmail,
-    role: userRole,
-    avatarUrl: userAvatarUrl,
+    username,
     token,
   };
 }
