@@ -21,7 +21,7 @@ const AdminNewCustomer = () => {
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
       toast.success(actionData.message);
-      navigate("/admin/customers");
+      navigate("/customers");
     }
   }, [actionData, navigation.state]);
   return (

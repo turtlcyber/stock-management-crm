@@ -10,7 +10,7 @@ import {
   UsersRoundIcon,
 } from "lucide-react";
 
-const prefix = "/admin";
+const prefix = "";
 export const adminMenus = [
   {
     id: 101,

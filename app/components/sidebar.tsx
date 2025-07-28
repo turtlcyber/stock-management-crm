@@ -9,7 +9,7 @@ const Sidebar = () => {
           <li key={id}>
             <NavLink
               to={href}
-              end={href === "/admin"}
+              end={href === ""}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2 rounded-md font-medium transition-all ${
                   isActive

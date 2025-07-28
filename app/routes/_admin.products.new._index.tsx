@@ -30,7 +30,7 @@ export default function NewProduct() {
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
       toast.success(actionData.message);
-      navigate("/admin/products");
+      navigate("/products");
     }
   }, [actionData, navigation.state]);
   return (

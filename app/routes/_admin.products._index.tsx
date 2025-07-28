@@ -12,7 +12,8 @@ const Products = () => {
 
   const columns: Column<Product>[] = [
     createColumn("Name", (c) => c.name),
-    createColumn("Price", (c) => `₹${Number(c.sellPrice).toFixed(2)}`),
+    createColumn("Price", (c) => `₹${Number(c.price).toFixed(2)}`),
+    createColumn("Sale Price", (c) => `₹${Number(c.sellPrice).toFixed(2)}`),
     createColumn("expDate", (c) =>
       c.expDate ? format(c.expDate, "MMM dd, yyyy") : "N/A"
     ),
@@ -29,7 +30,7 @@ const Products = () => {
         columns={columns}
         data={data}
         header="Product List"
-        addUrl={{ title: "New Product", url: "/admin/products/new" }}
+        addUrl={{ title: "New Product", url: "/products/new" }}
       />
     </div>
   );

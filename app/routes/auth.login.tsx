@@ -30,7 +30,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
       toast.success("Login successful");
-      navigate("/admin");
+      navigate("/");
     }
   }, [actionData, navigation.state]);
 

@@ -31,6 +31,7 @@ import DownloadPDFButton, {
   InvoiceContent,
 } from "@/components/print-component";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 export { loader, action };
 
@@ -62,9 +63,12 @@ const AdminHome = () => {
     price: number
   ) => {
     setOrderItems((prev) =>
-      prev.map((item, i) =>
-        i === index ? { ...item, [field]: value, price } : item
-      )
+      prev.map((item, i) => {
+        if (item.price === 0) {
+          return i === index ? { ...item, [field]: value, price } : item;
+        }
+        return i === index ? { ...item, [field]: value } : item;
+      })
     );
   };
 
@@ -74,8 +78,13 @@ const AdminHome = () => {
     return prod ? prod.sellPrice : 0;
   };
 
+  const getProductPriceFromOrderItems = (productId: string): number => {
+    const prod = orderItems.find((p) => p.productId === productId);
+    return prod ? prod.price : 0;
+  };
+
   const getRowTotal = (item: OrderRow) => {
-    return getProductPrice(item.productId) * item.quantity;
+    return getProductPriceFromOrderItems(item.productId) * item.quantity;
   };
 
   const getOrderTotal = () => {
@@ -108,6 +117,8 @@ const AdminHome = () => {
   const columns: Column<OrderT>[] = [
     createColumn("Customer", (c) => c.customer.name),
     createColumn("Items", (c) => c.orderItems.length),
+    createColumn("Qty", (c) => c.orderItems.reduce((acc,curr) => (acc + curr.quantity),0)),
+    createColumn("Price", (c) => c.orderItems[0].price),
     createColumn("Total", (c) => `${c.totalAmount}`),
     createColumn("Payment Method", (c) => c.paymentType),
     createColumn("Action", (c) => (
@@ -117,6 +128,7 @@ const AdminHome = () => {
             filename="invoice_123.pdf"
             content={
               <InvoiceContent
+                company={data.compnay}
                 orderId={c.id.toUpperCase()}
                 date={format(c.createdAt, "dd-MM-yyyy")}
                 customer={{
@@ -145,7 +157,6 @@ const AdminHome = () => {
     )),
   ];
   useEffect(() => {
-    console.log(fetcher.data);
     if (fetcher.data?.success) {
       toast.success(fetcher.data.message);
       setSelectedCustomer(null);
@@ -201,6 +212,17 @@ const AdminHome = () => {
                 </div>
                 <div className="mt-2 text-2xl font-bold text-gray-900">
                   ₹{data.customers.length}
+                </div>
+              </div>
+              <div className="bg-white border rounded-2xl p-4 ">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-semibold text-gray-600">
+                    Total Profite
+                  </h2>
+                  <ShoppingCart className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className={cn("mt-2 text-2xl font-bold", data.totalProfit < 0 ? "text-red-600":"text-gray-900")}>
+                  ₹{data.totalProfit}
                 </div>
               </div>
             </div>
@@ -276,7 +298,21 @@ const AdminHome = () => {
                             />
                           </td>
                           <td className="px-4 py-2">
-                            ₹{getProductPrice(item.productId)}
+                            <Input
+                              type="number"
+                              min="1"
+                              value={item.price}
+                              onChange={(e) => {
+                                const price = parseInt(e.target.value);
+                                console.log(price);
+                                updateProductRow(
+                                  index,
+                                  "price",
+                                  isNaN(price) ? 1 : price,
+                                  getProductPrice(item.productId)
+                                );
+                              }}
+                            />
                           </td>
                           <td className="px-4 py-2 w-32">
                             <Input

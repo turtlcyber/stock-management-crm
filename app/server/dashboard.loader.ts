@@ -1,14 +1,25 @@
 import { prismaDB } from "@/lib/connect-db";
 
 export const dashboardLoader = async () => {
-  //   const customers = await prismaDB.customer.findMany();
-  //   const products = await prismaDB.product.findMany();
-  const [customers, products, orders] = await Promise.all([
+  const [customers, products, orders, compnay] = await Promise.all([
     prismaDB.customer.findMany(),
     prismaDB.product.findMany(),
     prismaDB.order.findMany({
-      include: { orderItems: {include:{product:true}}, customer: true },
+      include: { orderItems: { include: { product: true } }, customer: true },
     }),
+    prismaDB.company.findFirst(),
   ]);
-  return { customers, products, orders };
+
+  const totalProfit = orders.reduce(
+    (acc, { orderItems }) =>
+      acc +
+      orderItems.reduce(
+        (sum, { price, product, quantity }) =>
+          sum + (price - product.price) * quantity,
+        0
+      ),
+    0
+  );
+
+  return { customers, products, orders, compnay, totalProfit };
 };

@@ -23,7 +23,7 @@ const AdminCustomer = () => {
     createColumn("Action", (c) => (
       <div className="flex justify-start space-x-1">
         <Button size={"icon"} asChild type="button">
-          <Link to={`/admin/customers/${c.id}`}>
+          <Link to={`/customers/${c.id}`}>
             <UserRound />
           </Link>
         </Button>
@@ -36,7 +36,7 @@ const AdminCustomer = () => {
         columns={columns}
         data={data as Customer[]}
         header="Customers"
-        addUrl={{ title: "New Customer", url: "/admin/customers/new" }}
+        addUrl={{ title: "New Customer", url: "/customers/new" }}
       />
     </div>
   );
