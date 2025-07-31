@@ -68,6 +68,7 @@ const Orders = () => {
           customer: el.customer!,
           orderItems: el.orderItems,
         }))}
+        itemsPerPage={10}
       />
     </div>
   );

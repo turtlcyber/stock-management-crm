@@ -45,6 +45,7 @@ model Order {
   customer    Customer?   @relation(fields: [customerId], references: [id])
   paymentType String
   totalAmount Float
+  notes       String?
   createdAt   DateTime    @default(now())
   orderItems  OrderItem[]
 }
@@ -64,4 +65,14 @@ model Company {
   name    String
   address String
   gst     String
+}
+
+model Expense {
+  id        String   @id @default(uuid())
+  title     String
+  amount    Float
+  notes     String?
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

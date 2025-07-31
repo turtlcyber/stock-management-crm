@@ -34,7 +34,7 @@ export default function NewProduct() {
     }
   }, [actionData, navigation.state]);
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="max-w-2xl p-4">
       <h1 className="text-2xl font-bold mb-4">Create New Product</h1>
       <Form method="post" encType="multipart/form-data" className="space-y-4">
         <div>

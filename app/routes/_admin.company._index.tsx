@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { companyLoader as loader } from "@/server/compnay.loader";
+import { companyLoaderWithExpense as loader } from "@/server/compnay.loader";
 import { companyCreate as action } from "@/server/compnay.action";
 import {
   Form,
   useActionData,
   useLoaderData,
-  useNavigate,
   useNavigation,
 } from "@remix-run/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import { GenericTable } from "@/components/table/GenericTable";
+import { Expense } from "@prisma/client";
+import { Column, createColumn } from "@/components/table/CreateColumn";
+import { format } from "date-fns";
 
 export { loader, action };
 
@@ -29,9 +32,15 @@ const CompnayData = () => {
     }
   }, [actionData, navigation.state]);
 
+  const columns: Column<Expense>[] = [
+    createColumn("Title", (c) => c.title),
+    createColumn("Amount", (c) => c.amount),
+    createColumn("Date", (c) => format(new Date(c.date), "MMM dd, yyyy")),
+    createColumn("Notes", (c) => c.notes),
+  ];
   return (
-    <div className="p-4">
-      <div className="bg-white border border-gray-200 shadow-md rounded-2xl p-6">
+    <div className="p-6">
+      <div className="bg-white border border-gray-200 rounded-2xl p-6">
         <h2 className="text-2xl font-semibold text-gray-800 mb-6">
           Company Information
         </h2>
@@ -39,15 +48,15 @@ const CompnayData = () => {
         <div className="grid gap-5 text-gray-700 text-sm md:text-base">
           <div>
             <p className="text-gray-500 mb-1">Company Name</p>
-            <p className="font-medium">{data?.name}</p>
+            <p className="font-medium">{data?.compnayData?.name}</p>
           </div>
           <div>
             <p className="text-gray-500 mb-1">Address</p>
-            <p className="font-medium">{data?.address ?? "N/A"}</p>
+            <p className="font-medium">{data?.compnayData?.address ?? "N/A"}</p>
           </div>
           <div>
             <p className="text-gray-500 mb-1">GST Number</p>
-            <p className="font-medium">{data?.gst ?? "N/A"}</p>
+            <p className="font-medium">{data?.compnayData?.gst ?? "N/A"}</p>
           </div>
         </div>
 
@@ -69,7 +78,7 @@ const CompnayData = () => {
                   <Input
                     name="name"
                     id="name"
-                    defaultValue={data?.name}
+                    defaultValue={data?.compnayData?.name}
                     required
                   />
                 </div>
@@ -81,7 +90,7 @@ const CompnayData = () => {
                   <Input
                     name="address"
                     id="address"
-                    defaultValue={data?.address}
+                    defaultValue={data?.compnayData?.address}
                     required
                   />
                 </div>
@@ -93,7 +102,7 @@ const CompnayData = () => {
                     name="gst"
                     id="gst"
                     required
-                    defaultValue={data?.gst}
+                    defaultValue={data?.compnayData?.gst}
                   />
                 </div>
               </div>
@@ -102,6 +111,16 @@ const CompnayData = () => {
               </Button>
             </Form>
           )}
+        </div>
+      </div>
+      <div className="mt-5">
+        <div className="border rounded-2xl overflow-hidden">
+          <GenericTable
+            columns={columns}
+            data={data.expenseData}
+            header="Expenses"
+            addUrl={{ title: "New Expense", url: "/company/new-expense" }}
+          />
         </div>
       </div>
     </div>

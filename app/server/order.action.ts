@@ -6,7 +6,7 @@ export const orderCreateAction = async ({ request }: ActionFunctionArgs) => {
   const orderItems = JSON.parse(formData.get("orderItems") as string);
   const selectedCustomer = formData.get("selectedCustomer") as string;
   const paymentType = formData.get("paymentType") as string;
-
+  const notes = formData.get("notes") as string;
 
   const totalAmount = orderItems.reduce(
     (acc: number, curr: any) => acc + curr.quantity * curr.price,
@@ -18,6 +18,7 @@ export const orderCreateAction = async ({ request }: ActionFunctionArgs) => {
         customerId: selectedCustomer,
         paymentType,
         totalAmount,
+        notes,
         orderItems: {
           create: orderItems,
         },

@@ -20,6 +20,9 @@ import {
   ScanLine,
   ShoppingCart,
   Trash,
+  TrendingDown,
+  TrendingUp,
+  UsersIcon,
 } from "lucide-react";
 import { Column, createColumn } from "@/components/table/CreateColumn";
 import { GenericTable } from "@/components/table/GenericTable";
@@ -117,7 +120,9 @@ const AdminHome = () => {
   const columns: Column<OrderT>[] = [
     createColumn("Customer", (c) => c.customer.name),
     createColumn("Items", (c) => c.orderItems.length),
-    createColumn("Qty", (c) => c.orderItems.reduce((acc,curr) => (acc + curr.quantity),0)),
+    createColumn("Qty", (c) =>
+      c.orderItems.reduce((acc, curr) => acc + curr.quantity, 0)
+    ),
     createColumn("Price", (c) => c.orderItems[0].price),
     createColumn("Total", (c) => `${c.totalAmount}`),
     createColumn("Payment Method", (c) => c.paymentType),
@@ -130,6 +135,7 @@ const AdminHome = () => {
               <InvoiceContent
                 company={data.compnay}
                 orderId={c.id.toUpperCase()}
+                notes={c.notes}
                 date={format(c.createdAt, "dd-MM-yyyy")}
                 customer={{
                   name: c.customer.name,
@@ -167,17 +173,20 @@ const AdminHome = () => {
       toast.error(fetcher.data.message);
     }
   }, [fetcher.data]);
+
+  const difference = data.totalProfit - data.totalExpense;
+  const isPositive = difference >= 0;
   return (
-    <div className="grid grid-cols-2 gap-4 p-6">
+    <div className="grid grid-cols-1 gap-4 p-6">
       <div>
-        <Card>
+        <Card className="bg-pink-100">
           <CardHeader>
             <CardTitle className="text-xl flex items-center">
               <LayoutDashboard className="mr-2 text-blue-700" /> Dashboard
             </CardTitle>
           </CardHeader>
           <CardContent className="">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-white border rounded-2xl p-4 ">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-semibold text-gray-600">
@@ -195,7 +204,7 @@ const AdminHome = () => {
               <div className="bg-white border rounded-2xl p-4 ">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-semibold text-gray-600">
-                    Total Sales
+                    Orders
                   </h2>
                   <ShoppingCart className="h-6 w-6 text-blue-600" />
                 </div>
@@ -206,41 +215,94 @@ const AdminHome = () => {
               <div className="bg-white border rounded-2xl p-4 ">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-semibold text-gray-600">
-                    Total Customers
+                    Customers
                   </h2>
-                  <ShoppingCart className="h-6 w-6 text-blue-600" />
+                  <UsersIcon className="h-6 w-6 text-blue-600" />
                 </div>
                 <div className="mt-2 text-2xl font-bold text-gray-900">
                   ₹{data.customers.length}
                 </div>
               </div>
+
               <div className="bg-white border rounded-2xl p-4 ">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-semibold text-gray-600">
-                    Total Profite
+                    Profit
                   </h2>
-                  <ShoppingCart className="h-6 w-6 text-blue-600" />
+                  <TrendingUp className="h-6 w-6 text-blue-600" />
                 </div>
-                <div className={cn("mt-2 text-2xl font-bold", data.totalProfit < 0 ? "text-red-600":"text-gray-900")}>
+                <div
+                  className={cn(
+                    "mt-2 text-2xl font-bold",
+                    data.totalProfit < 0 ? "text-red-600" : "text-gray-900"
+                  )}
+                >
                   ₹{data.totalProfit}
                 </div>
               </div>
-            </div>
-            <div className="border rounded-2xl overflow-hidden mt-4">
-              <GenericTable
-                header="Orders"
-                columns={columns}
-                data={data.orders.map((el) => ({
-                  ...el,
-                  customer: el.customer!,
-                  orderItems: el.orderItems,
-                }))}
-              />
+              <div className="bg-white border rounded-2xl p-4 ">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-semibold text-gray-600">
+                    Expense
+                  </h2>
+                  <TrendingDown className="h-6 w-6 text-blue-600" />
+                </div>
+                <div
+                  className={cn(
+                    "mt-2 text-2xl font-bold",
+                    data.totalExpense < 0 ? "text-red-600" : "text-gray-900"
+                  )}
+                >
+                  ₹{data.totalExpense}
+                </div>
+              </div>
+
+              <div
+                className={cn(
+                  " border rounded-2xl p-4 ",
+                  isPositive ? "bg-blue-100" : "bg-yellow-100"
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <h2
+                    className={cn(
+                      "text-sm font-semibold ",
+                      isPositive ? "text-blue-800" : "text-yellow-800"
+                    )}
+                  >
+                    {isPositive ? "Net Profit" : "Net Loss"}
+                  </h2>
+                  <DollarSign
+                    className={`w-6 h-6 ${
+                      isPositive ? "text-blue-600" : "text-yellow-600"
+                    }`}
+                  />
+                </div>
+                <div
+                  className={cn(
+                    "mt-2 text-2xl font-bold ",
+                    isPositive ? "text-blue-900" : "text-yellow-900"
+                  )}
+                >
+                  ₹{Math.abs(difference).toLocaleString()}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
-      <div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="border rounded-2xl overflow-hidden">
+          <GenericTable
+            header="Orders"
+            columns={columns}
+            data={data.orders.map((el) => ({
+              ...el,
+              customer: el.customer!,
+              orderItems: el.orderItems,
+            }))}
+          />
+        </div>
         <Card>
           <CardHeader>
             <CardTitle className="text-xl flex items-center">
@@ -302,6 +364,7 @@ const AdminHome = () => {
                               type="number"
                               min="1"
                               value={item.price}
+                              className="bg-white"
                               onChange={(e) => {
                                 const price = parseInt(e.target.value);
                                 console.log(price);
@@ -318,6 +381,7 @@ const AdminHome = () => {
                             <Input
                               type="number"
                               min="1"
+                              className="bg-white"
                               value={item.quantity}
                               onChange={(e) => {
                                 const qty = parseInt(e.target.value);
@@ -386,6 +450,7 @@ const AdminHome = () => {
                 <Textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
+                  className="bg-white"
                   placeholder="Optional notes about this order"
                 />
               </div>

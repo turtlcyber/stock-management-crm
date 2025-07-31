@@ -59,6 +59,7 @@ export default function DownloadPDFButton({
 interface InvoiceProps {
   orderId: string;
   company?: Company | null;
+  notes?: string | null;
   customer: {
     name: string;
     phone: string;
@@ -81,6 +82,7 @@ interface InvoiceProps {
 export function InvoiceContent({
   orderId,
   customer,
+  notes,
   company,
   orderItems,
   date,
@@ -149,6 +151,7 @@ export function InvoiceContent({
       </table>
 
       <div className="flex justify-end mt-4">
+        <div className="flex-1">{notes || ""}</div>
         <div className="w-1/3">
           <div className="flex justify-between border-t border-b py-2">
             <span className="font-semibold">Grand Total</span>

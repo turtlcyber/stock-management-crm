@@ -1,10 +1,9 @@
 import { customerByIdLoader as loader } from "@/server/customer.loader";
-import { Link, useLoaderData } from "@remix-run/react";
-import { Customer, Order, OrderItem, Product } from "@prisma/client";
+import { useLoaderData } from "@remix-run/react";
+import { Order, OrderItem, Product } from "@prisma/client";
 import { Column, createColumn } from "@/components/table/CreateColumn";
 import { GenericTable } from "@/components/table/GenericTable";
-import { Button } from "@/components/ui/button";
-import { Pencil, UserRound } from "lucide-react";
+import { UserRound } from "lucide-react";
 import { format } from "date-fns";
 export { loader };
 
@@ -69,7 +68,7 @@ const AdminCustomerInfo = () => {
         </div>
       </div>
 
-      <GenericTable columns={columns} header="" data={orders} hideTopBar/>
+      <GenericTable columns={columns} header="" data={orders} hideTopBar />
     </div>
   );
 };

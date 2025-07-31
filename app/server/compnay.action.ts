@@ -29,3 +29,35 @@ export const companyCreate = async ({ request }: ActionFunctionArgs) => {
     message: "New record added successfully",
   };
 };
+
+export const expenseCreate = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const title = formData.get("title")?.toString();
+  const amount = formData.get("amount")?.toString();
+  const date = formData.get("date")?.toString();
+  const notes = formData.get("notes")?.toString();
+  console.log(title);
+  console.log(amount);
+  console.log(date);
+  console.log(notes);
+  if (!title || !amount || !date) {
+    return {
+      success: false,
+      message: "All required field should be filled",
+    };
+  }
+
+  await prismaDB.expense.create({
+    data: {
+      title,
+      amount: Number(amount),
+      date: new Date(date),
+      notes,
+    },
+  });
+
+  return {
+    success: true,
+    message: "New Expense created successfully",
+  };
+};
